@@ -17,7 +17,7 @@ namespace mw2_fps_unlocker
             InitializeComponent();
 
             trackBarFPS = new TrackBarWithoutFocus();
-            trackBarFPS.Location = new Point(50, 41);
+            trackBarFPS.Location = new Point(50, 37);
             trackBarFPS.Size = new Size(151, 45);
             trackBarFPS.Scroll += TrackBarFPS_Scroll;
             trackBarFPS.Minimum = 75;

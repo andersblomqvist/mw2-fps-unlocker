@@ -40,7 +40,7 @@
             // LabelFPS
             // 
             this.LabelFPS.AutoSize = true;
-            this.LabelFPS.Location = new System.Drawing.Point(12, 43);
+            this.LabelFPS.Location = new System.Drawing.Point(12, 40);
             this.LabelFPS.Name = "LabelFPS";
             this.LabelFPS.Size = new System.Drawing.Size(29, 15);
             this.LabelFPS.TabIndex = 0;
@@ -49,7 +49,7 @@
             // LabelFOV
             // 
             this.LabelFOV.AutoSize = true;
-            this.LabelFOV.Location = new System.Drawing.Point(12, 80);
+            this.LabelFOV.Location = new System.Drawing.Point(12, 81);
             this.LabelFOV.Name = "LabelFOV";
             this.LabelFOV.Size = new System.Drawing.Size(32, 15);
             this.LabelFOV.TabIndex = 1;
@@ -58,7 +58,7 @@
             // LabelFPSValue
             // 
             this.LabelFPSValue.AutoSize = true;
-            this.LabelFPSValue.Location = new System.Drawing.Point(207, 43);
+            this.LabelFPSValue.Location = new System.Drawing.Point(207, 40);
             this.LabelFPSValue.Name = "LabelFPSValue";
             this.LabelFPSValue.Size = new System.Drawing.Size(25, 15);
             this.LabelFPSValue.TabIndex = 4;
@@ -67,7 +67,7 @@
             // LabelFOVValue
             // 
             this.LabelFOVValue.AutoSize = true;
-            this.LabelFOVValue.Location = new System.Drawing.Point(207, 80);
+            this.LabelFOVValue.Location = new System.Drawing.Point(207, 81);
             this.LabelFOVValue.Name = "LabelFOVValue";
             this.LabelFOVValue.Size = new System.Drawing.Size(19, 15);
             this.LabelFOVValue.TabIndex = 6;
