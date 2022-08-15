@@ -1,17 +1,20 @@
 using mw2_fps_unlocker.Memory;
 using mw2_fps_unlocker.App;
+using System.ComponentModel;
 
 namespace mw2_fps_unlocker
 {
     public partial class AppForm : Form
     {
         private MemoryHandler? mem;
+        private readonly ProcessHandler proc;
 
         private bool ingame = false;
 
         private readonly TrackBarWithoutFocus trackBarFPS;
         private readonly TrackBarWithoutFocus trackBarFOV;
 
+        private BackgroundWorker updater;
         public AppForm()
         {
             InitializeComponent();
@@ -37,19 +40,51 @@ namespace mw2_fps_unlocker
             this.Controls.Add(trackBarFPS);
             this.Controls.Add(trackBarFOV);
 
-            _ = new ProcessHandler("iw4mp", (mw2) =>
+            proc = new ProcessHandler();
+
+            updater = new BackgroundWorker();
+            updater.DoWork += Updater_DoWork;
+
+            FindProcess();
+        }
+
+        private void FindProcess()
+        {
+            proc.FindByName("iw4mp", (mw2) =>
             {
                 Invoke(new Action(() =>
                 {
-                    LabelStatusValue.Text = "MW2 Started";
-                    LabelStatusValue.ForeColor = Color.Green;
                     mem = new MemoryHandler(mw2.Handle);
                     ingame = true;
-
-                    SetFPS();
-                    SetFOV();
+                    updater.RunWorkerAsync();
                 }));
             });
+        }
+
+        /// <summary>
+        /// We need to constantly write the FPS and FOV change. Otherwise
+        /// it resets back to normal by mw2.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Updater_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            LabelStatusValue.Text = "MW2 Started";
+            LabelStatusValue.ForeColor = Color.Green;
+
+            while (proc.IsRunning())
+            {
+                SetFPS();
+                SetFOV();
+                Thread.Sleep(250);
+            }
+
+            LabelStatusValue.Text = "Not In-game";
+            LabelStatusValue.ForeColor = Color.RoyalBlue;
+
+            // Start the Find Process routine so we don't need to restart
+            // the app.
+            FindProcess();
         }
 
         private void SetFPS()
@@ -57,14 +92,20 @@ namespace mw2_fps_unlocker
             if (mem == null)
                 return;
 
-            mem.WriteInteger(mem.ReadInteger(0x01B907B0, 4) + 0xC, trackBarFPS.Value);
+            mem.WriteInteger(
+                mem.ReadInteger(0x01B907B0, 4) + 0xC, 
+                trackBarFPS.Value
+            );
         }
         private void SetFOV()
         {
             if (mem == null)
                 return;
 
-            mem.WriteFloat(mem.ReadInteger(0x00AAC278, 4) + 0xC, trackBarFOV.Value);
+            mem.WriteFloat(
+                mem.ReadInteger(0x00AAC278, 4) + 0xC, 
+                trackBarFOV.Value
+            );
         }
 
         private void TrackBarFPS_Scroll(object? sender, EventArgs e)

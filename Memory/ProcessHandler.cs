@@ -6,12 +6,15 @@ namespace mw2_fps_unlocker.Memory
 {
     internal class ProcessHandler
     {
-        private readonly BackgroundWorker thread;
-
         public delegate void ProcessFoundCallback(Process proc);
+
+        private BackgroundWorker thread;
+
         private ProcessFoundCallback processFoundCallback;
         private Process? proc;
         private string processName;
+        
+        public ProcessHandler() {}
 
         /// <summary>
         /// Find a process by name. When the process is found this will call the
@@ -21,7 +24,7 @@ namespace mw2_fps_unlocker.Memory
         /// </summary>
         /// <param name="processName"></param>
         /// <param name="callback"></param>
-        public ProcessHandler(string processName, ProcessFoundCallback callback)
+        internal void FindByName(string processName, ProcessFoundCallback callback)
         {
             this.processName = processName;
             processFoundCallback = callback;
@@ -53,6 +56,23 @@ namespace mw2_fps_unlocker.Memory
                 process = null;
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Checks whether the process is currently running or not.
+        /// </summary>
+        /// <returns>True if running</returns>
+        internal bool IsRunning()
+        {
+            if(proc != null)
+            {
+                if (GetProcessByName(proc.ProcessName, out _))
+                    return true;
+                else 
+                    return false;
+
+            }
+            return false;
         }
     }
 }

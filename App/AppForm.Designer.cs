@@ -76,7 +76,7 @@
             // LabelStatusValue
             // 
             this.LabelStatusValue.AutoSize = true;
-            this.LabelStatusValue.ForeColor = System.Drawing.SystemColors.MenuHighlight;
+            this.LabelStatusValue.ForeColor = System.Drawing.Color.RoyalBlue;
             this.LabelStatusValue.Location = new System.Drawing.Point(12, 12);
             this.LabelStatusValue.Name = "LabelStatusValue";
             this.LabelStatusValue.Size = new System.Drawing.Size(76, 15);
