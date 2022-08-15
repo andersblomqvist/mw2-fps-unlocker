@@ -28,16 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AppForm));
             this.LabelFPS = new System.Windows.Forms.Label();
             this.LabelFOV = new System.Windows.Forms.Label();
-            this.ButtonSave = new System.Windows.Forms.Button();
-            this.TrackBarFPS = new System.Windows.Forms.TrackBar();
             this.LabelFPSValue = new System.Windows.Forms.Label();
-            this.TrackBarFOV = new System.Windows.Forms.TrackBar();
             this.LabelFOVValue = new System.Windows.Forms.Label();
             this.LabelStatusValue = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.TrackBarFPS)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.TrackBarFOV)).BeginInit();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LabelFPS
@@ -58,46 +55,14 @@
             this.LabelFOV.TabIndex = 1;
             this.LabelFOV.Text = "FOV:";
             // 
-            // ButtonSave
-            // 
-            this.ButtonSave.Location = new System.Drawing.Point(12, 124);
-            this.ButtonSave.Name = "ButtonSave";
-            this.ButtonSave.Size = new System.Drawing.Size(214, 28);
-            this.ButtonSave.TabIndex = 2;
-            this.ButtonSave.Text = "Save";
-            this.ButtonSave.UseVisualStyleBackColor = true;
-            // 
-            // TrackBarFPS
-            // 
-            this.TrackBarFPS.Location = new System.Drawing.Point(50, 41);
-            this.TrackBarFPS.Maximum = 300;
-            this.TrackBarFPS.Minimum = 75;
-            this.TrackBarFPS.Name = "TrackBarFPS";
-            this.TrackBarFPS.Size = new System.Drawing.Size(151, 45);
-            this.TrackBarFPS.TabIndex = 3;
-            this.TrackBarFPS.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.TrackBarFPS.Value = 75;
-            // 
             // LabelFPSValue
             // 
             this.LabelFPSValue.AutoSize = true;
             this.LabelFPSValue.Location = new System.Drawing.Point(207, 43);
             this.LabelFPSValue.Name = "LabelFPSValue";
-            this.LabelFPSValue.Size = new System.Drawing.Size(19, 15);
+            this.LabelFPSValue.Size = new System.Drawing.Size(25, 15);
             this.LabelFPSValue.TabIndex = 4;
-            this.LabelFPSValue.Text = "75";
-            // 
-            // TrackBarFOV
-            // 
-            this.TrackBarFOV.BackColor = System.Drawing.SystemColors.Control;
-            this.TrackBarFOV.Location = new System.Drawing.Point(50, 80);
-            this.TrackBarFOV.Maximum = 100;
-            this.TrackBarFOV.Minimum = 60;
-            this.TrackBarFOV.Name = "TrackBarFOV";
-            this.TrackBarFOV.Size = new System.Drawing.Size(151, 45);
-            this.TrackBarFOV.TabIndex = 5;
-            this.TrackBarFOV.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.TrackBarFOV.Value = 75;
+            this.LabelFPSValue.Text = "300";
             // 
             // LabelFOVValue
             // 
@@ -106,7 +71,7 @@
             this.LabelFOVValue.Name = "LabelFOVValue";
             this.LabelFOVValue.Size = new System.Drawing.Size(19, 15);
             this.LabelFOVValue.TabIndex = 6;
-            this.LabelFOVValue.Text = "75";
+            this.LabelFOVValue.Text = "80";
             // 
             // LabelStatusValue
             // 
@@ -118,26 +83,33 @@
             this.LabelStatusValue.TabIndex = 8;
             this.LabelStatusValue.Text = "Not In-Game";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.SystemColors.AppWorkspace;
+            this.label1.Location = new System.Drawing.Point(166, 109);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(69, 15);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "by branders";
+            // 
             // AppForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(243, 161);
+            this.ClientSize = new System.Drawing.Size(247, 134);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.LabelStatusValue);
             this.Controls.Add(this.LabelFOVValue);
-            this.Controls.Add(this.TrackBarFOV);
             this.Controls.Add(this.LabelFPSValue);
-            this.Controls.Add(this.TrackBarFPS);
-            this.Controls.Add(this.ButtonSave);
             this.Controls.Add(this.LabelFOV);
             this.Controls.Add(this.LabelFPS);
-            this.MaximumSize = new System.Drawing.Size(259, 200);
-            this.MinimumSize = new System.Drawing.Size(259, 200);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AppForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FPS Unlocker";
-            ((System.ComponentModel.ISupportInitialize)(this.TrackBarFPS)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.TrackBarFOV)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -147,11 +119,9 @@
 
         private Label LabelFPS;
         private Label LabelFOV;
-        private Button ButtonSave;
-        private TrackBar TrackBarFPS;
         private Label LabelFPSValue;
-        private TrackBar TrackBarFOV;
         private Label LabelFOVValue;
         private Label LabelStatusValue;
+        private Label label1;
     }
 }
