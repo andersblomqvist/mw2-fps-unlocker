@@ -10,6 +10,7 @@
     <ApplicationIcon>gnome-ico.ico</ApplicationIcon>
     <Authors>Branders</Authors>
     <Product>MW2 FPS Unlocker</Product>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
