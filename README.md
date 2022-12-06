@@ -1,4 +1,4 @@
-# MW2 FPS and FOV Unlocker :unlock:
+# MW2 2009 FPS and FOV Unlocker :unlock:
 
 Tool for changing the max fps and fov for mw2 (2009) because they do not provide it.
 
