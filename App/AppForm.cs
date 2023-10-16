@@ -93,7 +93,7 @@ namespace mw2_fps_unlocker
                 return;
 
             mem.WriteInteger(
-                mem.ReadInteger(0x01B907B0, 4) + 0xC, 
+                mem.ReadInteger(0x01B90730, 4) + 0xC, 
                 trackBarFPS.Value
             );
         }
@@ -103,7 +103,7 @@ namespace mw2_fps_unlocker
                 return;
 
             mem.WriteFloat(
-                mem.ReadInteger(0x00AAC278, 4) + 0xC, 
+                mem.ReadInteger(0x00AAC1F8, 4) + 0xC, 
                 trackBarFOV.Value
             );
         }
