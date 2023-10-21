@@ -1,6 +1,7 @@
 using mw2_fps_unlocker.Memory;
 using mw2_fps_unlocker.App;
 using System.ComponentModel;
+using System.Configuration;
 
 namespace mw2_fps_unlocker
 {
@@ -22,20 +23,21 @@ namespace mw2_fps_unlocker
             trackBarFPS = new TrackBarWithoutFocus();
             trackBarFPS.Location = new Point(50, 37);
             trackBarFPS.Size = new Size(151, 45);
-            trackBarFPS.Scroll += TrackBarFPS_Scroll;
-            trackBarFPS.Minimum = 75;
-            trackBarFPS.Maximum = 300;
-            trackBarFPS.Value = 300;
+            trackBarFPS.ValueChanged += TrackBarFPS_Scroll;
+            trackBarFPS.MouseUp += WriteSaveSettings;
+            trackBarFPS.Minimum = 60;
+            trackBarFPS.Maximum = 333;
             trackBarFPS.TickStyle = TickStyle.None;
 
             trackBarFOV = new TrackBarWithoutFocus();
             trackBarFOV.Location = new Point(50, 80);
             trackBarFOV.Size = new Size(151, 45);
-            trackBarFOV.Scroll += TrackBarFOV_Scroll;
+            trackBarFOV.ValueChanged += TrackBarFOV_Scroll;
+            trackBarFOV.MouseUp += WriteSaveSettings;
             trackBarFOV.Minimum = 60;
-            trackBarFOV.Maximum = 100;
-            trackBarFOV.Value = 80;
+            trackBarFOV.Maximum = 160;
             trackBarFOV.TickStyle = TickStyle.None;
+            LoadSettings();
 
             this.Controls.Add(trackBarFPS);
             this.Controls.Add(trackBarFOV);
@@ -93,7 +95,7 @@ namespace mw2_fps_unlocker
                 return;
 
             mem.WriteInteger(
-                mem.ReadInteger(0x01B90730, 4) + 0xC, 
+                mem.ReadInteger(0x01B90730, 4) + 0xC,
                 trackBarFPS.Value
             );
         }
@@ -103,7 +105,7 @@ namespace mw2_fps_unlocker
                 return;
 
             mem.WriteFloat(
-                mem.ReadInteger(0x00AAC1F8, 4) + 0xC, 
+                mem.ReadInteger(0x00AAC1F8, 4) + 0xC,
                 trackBarFOV.Value
             );
         }
@@ -111,15 +113,37 @@ namespace mw2_fps_unlocker
         private void TrackBarFPS_Scroll(object? sender, EventArgs e)
         {
             LabelFPSValue.Text = trackBarFPS.Value.ToString();
-            if (ingame)
-                SetFPS();
         }
 
         private void TrackBarFOV_Scroll(object? sender, EventArgs e)
         {
             LabelFOVValue.Text = trackBarFOV.Value.ToString();
+        }
+
+        private void WriteSaveSettings(object? sender, EventArgs e)
+        {
+            Properties.Settings.Default.fps = trackBarFPS.Value;
+            Properties.Settings.Default.fov = trackBarFOV.Value;
+            Properties.Settings.Default.Save();
+            ApplyChanges();
+        }
+
+        private void ApplyChanges()
+        {
             if (ingame)
+            {
                 SetFOV();
+                SetFPS();
+            }
+
+        }
+
+        private void LoadSettings()
+        {
+            trackBarFPS.Value = Properties.Settings.Default.fps;
+            LabelFPSValue.Text = trackBarFPS.Value.ToString();
+            trackBarFOV.Value = Properties.Settings.Default.fov;
+            LabelFOVValue.Text = trackBarFOV.Value.ToString();
         }
     }
 }
