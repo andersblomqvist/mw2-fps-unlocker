@@ -1,71 +1,82 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mw2_fps_unlocker.Memory
 {
+    /// <summary>
+    /// Read/write memory of a 64-bit process. The calling app must be built
+    /// as x64 (Platform target: x64)
     internal class MemoryHandler
     {
-        [DllImport("kernel32.dll")]
-        private static extern int ReadProcessMemory(
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool ReadProcessMemory(
             IntPtr hProcess,
             IntPtr lpBaseAddress,
-            [In][Out] byte[] buffer,
-            uint size,
-            ref IntPtr lpNumberOfBytesWritten
+            byte[] lpBuffer,
+            nuint nSize,
+            out nuint lpNumberOfBytesRead
         );
 
-        [DllImport("kernel32.dll")]
-        private static extern int WriteProcessMemory(
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool WriteProcessMemory(
             IntPtr hProcess,
             IntPtr lpBaseAddress,
-            [In][Out] byte[] buffer,
-            uint size,
-            ref IntPtr lpNumberOfBytesWritten
+            byte[] lpBuffer,
+            nuint nSize,
+            out nuint lpNumberOfBytesWritten
         );
 
-        private IntPtr pHandle;
+        private readonly IntPtr pHandle;
 
         /// <summary>
-        /// Handle memory read and write to the process (handle)
+        /// Base address of the main module (iw4mp.exe). The exe uses ASLR,
+        /// so this changes between launches and all offsets are relative to it.
         /// </summary>
-        /// <param name="pHandle"></param>
-        public MemoryHandler(IntPtr pHandle) => this.pHandle = pHandle;
+        internal IntPtr BaseAddress { get; }
 
-        private byte[] Read(int Address, int Length)
+        internal MemoryHandler(Process process)
         {
-            byte[] array = new byte[checked(Length - 1 + 1)];
-            IntPtr zero = IntPtr.Zero;
-            _ = ReadProcessMemory(pHandle, new IntPtr(Address), array, uint.Parse(Conversions.ToString(array.Length)), ref zero);
-            return array;
+            pHandle = process.Handle;
+            BaseAddress = process.MainModule!.BaseAddress;
         }
 
-        internal int ReadInteger(int Address, int Length = 4)
+        private byte[]? Read(IntPtr address, int length)
         {
-            return BitConverter.ToInt32(Read(Address, Length), 0);
+            byte[] buffer = new byte[length];
+            if (!ReadProcessMemory(pHandle, address, buffer, (nuint)length, out nuint read) || read != (nuint)length)
+                return null;
+            return buffer;
         }
 
-        private void Write(int Address, int Value)
+        /// <summary>Reads a 64-bit pointer. Returns IntPtr.Zero on failure.</summary>
+        internal IntPtr ReadPointer(IntPtr address)
         {
-            byte[] bytes = BitConverter.GetBytes(Value);
-            IntPtr zero = IntPtr.Zero;
-            _ = WriteProcessMemory(pHandle, new IntPtr(Address), bytes, uint.Parse(Conversions.ToString(bytes.Length)), ref zero);
+            byte[]? b = Read(address, 8);
+            return b == null ? IntPtr.Zero : (IntPtr)BitConverter.ToInt64(b, 0);
         }
 
-        internal void WriteInteger(int Address, int Value)
+        internal int ReadInteger(IntPtr address)
         {
-            Write(Address, Value);
+            byte[]? b = Read(address, 4);
+            return b == null ? 0 : BitConverter.ToInt32(b, 0);
         }
 
-        internal void WriteFloat(int Address, float Float)
+        internal float ReadFloat(IntPtr address)
         {
-            byte[] bytes = BitConverter.GetBytes(Float);
-            IntPtr zero = IntPtr.Zero;
-            _ = WriteProcessMemory(pHandle, new IntPtr(Address), bytes, 4U, ref zero);
+            byte[]? b = Read(address, 4);
+            return b == null ? 0f : BitConverter.ToSingle(b, 0);
+        }
+
+        internal void WriteInteger(IntPtr address, int value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            _ = WriteProcessMemory(pHandle, address, bytes, (nuint)bytes.Length, out _);
+        }
+
+        internal void WriteFloat(IntPtr address, float value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            _ = WriteProcessMemory(pHandle, address, bytes, (nuint)bytes.Length, out _);
         }
     }
 }

@@ -1,11 +1,16 @@
 using mw2_fps_unlocker.Memory;
 using mw2_fps_unlocker.App;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace mw2_fps_unlocker
 {
     public partial class AppForm : Form
     {
+        private const long OFFSET_COM_MAXFPS = 0x1D260A8;   // int
+        private const long OFFSET_CG_FOV = 0x809C78;        // float
+        private const int DVAR_VALUE_OFFSET = 0x10;
+
         private MemoryHandler? mem;
         private readonly ProcessHandler proc;
 
@@ -24,7 +29,7 @@ namespace mw2_fps_unlocker
             trackBarFPS.Size = new Size(151, 45);
             trackBarFPS.Scroll += TrackBarFPS_Scroll;
             trackBarFPS.Minimum = 75;
-            trackBarFPS.Maximum = 300;
+            trackBarFPS.Maximum = 500;
             trackBarFPS.Value = 300;
             trackBarFPS.TickStyle = TickStyle.None;
 
@@ -54,7 +59,7 @@ namespace mw2_fps_unlocker
             {
                 Invoke(new Action(() =>
                 {
-                    mem = new MemoryHandler(mw2.Handle);
+                    mem = new MemoryHandler(mw2);
                     ingame = true;
                     updater.RunWorkerAsync();
                 }));
@@ -65,12 +70,13 @@ namespace mw2_fps_unlocker
         /// We need to constantly write the FPS and FOV change. Otherwise
         /// it resets back to normal by mw2.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Updater_DoWork(object? sender, DoWorkEventArgs e)
         {
-            LabelStatusValue.Text = "MW2 Started";
-            LabelStatusValue.ForeColor = Color.Green;
+            Invoke(new Action(() =>
+            {
+                LabelStatusValue.Text = "MW2 Started";
+                LabelStatusValue.ForeColor = Color.Green;
+            }));
 
             while (proc.IsRunning())
             {
@@ -79,12 +85,30 @@ namespace mw2_fps_unlocker
                 Thread.Sleep(250);
             }
 
-            LabelStatusValue.Text = "Not In-game";
-            LabelStatusValue.ForeColor = Color.RoyalBlue;
+            ingame = false;
+            mem = null;
+
+            Invoke(new Action(() =>
+            {
+                LabelStatusValue.Text = "Not In-game";
+                LabelStatusValue.ForeColor = Color.RoyalBlue;
+            }));
 
             // Start the Find Process routine so we don't need to restart
             // the app.
             FindProcess();
+        }
+
+        /// <summary>
+        /// Resolves a dvar_t* stored at moduleBase + offset. Returns Zero if
+        /// the game hasn't registered the dvar yet.
+        /// </summary>
+        private IntPtr GetDvar(long globalOffset)
+        {
+            if (mem == null)
+                return IntPtr.Zero;
+
+            return mem.ReadPointer(mem.BaseAddress + (nint)globalOffset);
         }
 
         private void SetFPS()
@@ -92,20 +116,23 @@ namespace mw2_fps_unlocker
             if (mem == null)
                 return;
 
-            mem.WriteInteger(
-                mem.ReadInteger(0x01B90730, 4) + 0xC, 
-                trackBarFPS.Value
-            );
+            IntPtr dvar = GetDvar(OFFSET_COM_MAXFPS);
+            if (dvar == IntPtr.Zero)
+                return;
+
+            mem.WriteInteger(dvar + DVAR_VALUE_OFFSET, trackBarFPS.Value);
         }
+
         private void SetFOV()
         {
             if (mem == null)
                 return;
 
-            mem.WriteFloat(
-                mem.ReadInteger(0x00AAC1F8, 4) + 0xC, 
-                trackBarFOV.Value
-            );
+            IntPtr dvar = GetDvar(OFFSET_CG_FOV);
+            if (dvar == IntPtr.Zero)
+                return;
+
+            mem.WriteFloat(dvar + DVAR_VALUE_OFFSET, trackBarFOV.Value);
         }
 
         private void TrackBarFPS_Scroll(object? sender, EventArgs e)
